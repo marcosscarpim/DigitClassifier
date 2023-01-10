@@ -1,6 +1,7 @@
 package com.scarpim.digitclassifier
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,13 +54,17 @@ fun ScratchPad() {
         }
     ) {
         Column {
-            PaintBody(path)
+            val snapShot = captureBitmap {
+                PaintBody(path)
+            }
             Spacer(modifier = Modifier.size(20.dp))
             IconButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 onClick = {
-                // TODO take screenshot and call model
-            }) {
+                    val bitmap = snapShot.invoke()
+                    Log.d("MarcosLog", "ScratchPad: bitmap Acquired - width = ${bitmap.width}, height = ${bitmap.height}")
+                }
+            ) {
                 Icon(
                     imageVector = Icons.Default.Build,
                     contentDescription ="Classify"
