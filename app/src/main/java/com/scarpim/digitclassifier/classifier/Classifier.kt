@@ -40,7 +40,10 @@ class Classifier(
 
     private val outputTensor: Tensor = interpreter.getOutputTensor(0)
 
-    val inputShape: Size = with(inputTensor.shape()) { Size(this[2], this[1]) }
+    // TODO check this
+    val inputShape: Size = with(inputTensor.shape()) {
+        Size(this[1], 1)
+    }
 
     private val imagePixels = IntArray(inputShape.height * inputShape.width)
 
