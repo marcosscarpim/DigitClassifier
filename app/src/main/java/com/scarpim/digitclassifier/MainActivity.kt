@@ -141,7 +141,7 @@ fun PaintBody(path:MutableState<MutableList<PathState>>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.7f)
+            .fillMaxHeight(0.6f)
             .background(Color.White)
     ) {
         val drawColor = Color.Black

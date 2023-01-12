@@ -42,7 +42,7 @@ class Classifier(
 
     // TODO check this
     val inputShape: Size = with(inputTensor.shape()) {
-        Size(this[1], 1)
+        Size(this[1], this[2])
     }
 
     private val imagePixels = IntArray(inputShape.height * inputShape.width)
@@ -100,7 +100,7 @@ class Classifier(
 
     companion object {
         private val LOG_TAG: String = Classifier::class.java.simpleName
-        private const val MODEL_FILE_NAME: String = "model_marcos_minst.tflite"
+        private const val MODEL_FILE_NAME: String = "model_marcos_conv.tflite"
     }
 }
 
