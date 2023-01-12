@@ -40,7 +40,6 @@ class Classifier(
 
     private val outputTensor: Tensor = interpreter.getOutputTensor(0)
 
-    // TODO check this
     val inputShape: Size = with(inputTensor.shape()) {
         Size(this[1], this[2])
     }
