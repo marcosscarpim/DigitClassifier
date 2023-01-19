@@ -9,16 +9,16 @@ import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -31,12 +31,13 @@ import com.scarpim.digitclassifier.classifier.Recognition
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ScratchPad(viewModel: MainViewModel) {
-    val path = remember { mutableStateOf(mutableListOf<Path>()) }
+    val path = remember { mutableStateListOf<Path>() }
     val result = viewModel.result.collectAsState()
+
     Scaffold(
         topBar = {
             ComposePaintAppBar{
-                path.value = mutableListOf()
+                path.clear()
             }
         }
     ) {
@@ -56,7 +57,26 @@ fun ScratchPad(viewModel: MainViewModel) {
 }
 
 @Composable
-fun PaintBody(path: MutableState<MutableList<Path>>) {
+fun ComposePaintAppBar(
+    onDelete:()-> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(text = "Digit Classifier")
+        },
+        actions = {
+            IconButton(onClick = onDelete) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription ="Delete"
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun PaintBody(path: MutableList<Path>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -66,12 +86,10 @@ fun PaintBody(path: MutableState<MutableList<Path>>) {
         val drawColor = Color.Black
         val drawBrush = 100f
 
-        path.value.add(Path())
-
         DrawingCanvas(
             drawColor,
             drawBrush,
-            path.value
+            path
         )
     }
 }
@@ -83,26 +101,24 @@ fun DrawingCanvas(
     drawBrush: Float,
     path: MutableList<Path>
 ) {
-    val currentPath = path.last()
     val movePath = remember{ mutableStateOf<Offset?>(null)}
     val canvasSize = remember { mutableStateOf<Size?>(null) }
 
     Canvas(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 100.dp)
+            .clip(shape = RoundedCornerShape(4.dp))
             .pointerInteropFilter {
                 when (it.action) {
                     MotionEvent.ACTION_DOWN -> {
-                        currentPath.moveTo(it.x, it.y)
+                        path.add(Path())
+                        path.last().moveTo(it.x, it.y)
                     }
                     MotionEvent.ACTION_MOVE -> {
-                        if (it.y < (canvasSize.value?.height ?: 0f)) {
-                            movePath.value = Offset(it.x, it.y)
-                        }
+                        movePath.value = Offset(it.x,it.y)
                     }
                     else -> {
-                        movePath.value = null
+                       movePath.value = null
                     }
                 }
                 true
@@ -110,9 +126,9 @@ fun DrawingCanvas(
     ){
         canvasSize.value = size
         movePath.value?.let {
-            currentPath.lineTo(it.x,it.y)
+            path.last().lineTo(it.x,it.y)
             drawPath(
-                path = currentPath,
+                path = path.last(),
                 color = drawColor,
                 style = Stroke(drawBrush)
             )
