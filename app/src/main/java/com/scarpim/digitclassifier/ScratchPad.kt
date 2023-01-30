@@ -20,7 +20,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -102,7 +101,6 @@ fun DrawingCanvas(
     path: MutableList<Path>
 ) {
     val movePath = remember{ mutableStateOf<Offset?>(null)}
-    val canvasSize = remember { mutableStateOf<Size?>(null) }
 
     Canvas(
         modifier = Modifier
@@ -124,7 +122,6 @@ fun DrawingCanvas(
                 true
             }
     ){
-        canvasSize.value = size
         movePath.value?.let {
             path.last().lineTo(it.x,it.y)
             drawPath(
